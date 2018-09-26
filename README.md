@@ -56,6 +56,7 @@ The following concepts are implemted for determining the final trajectory to the
     `other_car_s += ((double)prev_size * 0.02 * other_car_vel);`
     
 * Behaviour Planning
+
     This module is responsible for the actual decision making during the course of the travel. The prection module is implemented between the lines 322 & 384 in main.cpp
     It checks when it is safe to change lanes when something is ahead of you in your current lane. The flags set by the prediction module are used to determine the decision
     
@@ -72,6 +73,7 @@ The following concepts are implemted for determining the final trajectory to the
 		check if vehicle is in RIGHT LANE, and if middle lane is free, move to middle lane
 
 * Trajectory Generation
+
     This forms the major chunk of implementation in main.cpp - Lines 386 to 551
     Trajectory generation not only involves a smooth trajectory for lane change or straight drive, but also a sequence of time steps in which this transition needs to be performed.
     Map waypoints given by the Map are very sparse and it is not realistic to use those points to determine the actual path. Hence using those sparse points, a trajectory is first generated and then it is interpolated for every time cycle of the simulator (which is 0.02 seconds)
