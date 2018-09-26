@@ -249,7 +249,6 @@ int main() {
 
           	//prev_size is the number of points left out by the car yet. This is given by the simulator
           	int prev_size = previous_path_x.size();
-          	//cout << "Previous size :: " << prev_size << endl;
 
 
           	/*
@@ -263,7 +262,7 @@ int main() {
           	if(prev_size > 0) {
           		car_s = end_path_s;
           	}
-
+          	/////////////////// PREDICTION START ///////////////////////
           	/*
           	 * These variables are used to identify if car is in the current, left or right lanes
           	 * within 30 m which is considered to be a safe distance
@@ -275,11 +274,8 @@ int main() {
 
           	// Loop through the sensor fusion data
           	// format :: [id, x, y, vx, vy, s, d]
-          	//cout << "sensor fusion start with len :: " << sensor_fusion.size() << endl;
 
           	for(int i=0; i<sensor_fusion.size(); i++) {
-          		//cout << "Sensor fusion instance :: " << i << endl;
-          		//cout << "Inside sensor fusion" << endl;
 
           		//Evaluate where the car is
           		int other_car_lane;
@@ -297,11 +293,8 @@ int main() {
           			continue;
           		}
 
-
-
           		//Each lane size is 4 m, we are in middle lane
           		// so the d should be > 4(-2) or < 8(+2) to be in our lane. +2 is for the middle of the lane
-          		//cout << "d value - " << d << endl;
 				double other_car_vx = sensor_fusion[i][3];
 				double other_car_vy = sensor_fusion[i][4];
 				double other_car_vel = sqrt((other_car_vx*other_car_vx) + (other_car_vy*other_car_vy));
@@ -310,7 +303,6 @@ int main() {
 
 				//Predict the next car's next instance
 				other_car_s += ((double)prev_size * 0.02 * other_car_vel);
-				//cout << "car s :: " << car_s << ", next car s " << next_car_s << " - " << next_car_vel << endl;
 
 				//Check if ith car is in which lane, and calculate the dist between my car and that car and set appropriate lane car variable
 				//If other car is very near, then decrease speed much faster
@@ -325,8 +317,10 @@ int main() {
 					if(other_car_s - car_s < 10) quick_break = true;
 				}
           	}
+          	/////////////////// PREDICTION END ///////////////////////
 
-          	//cout << "sensor fusion end with mycarlane, ahead, left & right -  " << my_car_lane << ", " << car_ahead <<", " << car_left <<", " << car_right << endl;
+      		//////////////////  BEHAVIOUR PLANNING START //////////////////
+
 
 
 				/*
@@ -365,7 +359,6 @@ int main() {
 						} else {
 							ref_vel -= MAX_ACC;
 						}
-						//cout << "Too Close, reducing the speed! " << ref_vel <<  "\n";
 					}
 
 				} else {
@@ -388,10 +381,7 @@ int main() {
 					}
 				}
 
-
-
-          	//cout << "after final setting vel, my_car_lane :: " << ref_vel << ", " << my_car_lane << endl;
-
+	      		//////////////////  BEHAVIOUR PLANNING END //////////////////
 
 
          	/*

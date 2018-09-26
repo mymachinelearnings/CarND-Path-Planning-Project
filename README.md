@@ -1,5 +1,82 @@
-# CarND-Path-Planning-Project
-Self-Driving Car Engineer Nanodegree Program
+## Self-Driving Car Engineer Nanodegree Program
+## Term 3 Project 1
+### Path Planning Project
+
+---
+
+### Writeup Template
+
+In this project, your goal is to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. A successful path planner will be able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data.
+
+---
+### Rubric Points
+Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/1020/view) individually and describe how I addressed each point in my implementation. Here is a link to my [project code](https://github.com/mymachinelearnings/CarND-Path-Planning-Project/)
+
+---
+#### The code compiles correctly
+The snippet below shows my code is compiled correctly
+
+![Compile Screenshot](data/WriteupImages/compile.jpg)
+
+#### The car is able to drive at least 4.32 miles without incident
+The snippet below shows the car drove over 8 miles without an incident
+
+![No Incident Screenshot](data/WriteupImages/no_incident.png)
+
+#### The car drives according to the speed limit
+The car never exceeded 50 MPH as the max velocity is set as 49.5 MPH
+
+![Max Velocity](data/WriteupImages/max_vel.jpg)
+
+#### Max Acceleration and Jerk are not Exceeded
+Acceleration/deceleration was set to 0.224 m/s^2 which provides a smooth comfort experience during most of the cases.
+For cases where the velocity is far lesser than MAX_VELOCITY and there's no car within the next 30 m, then the acceleration is set to 2*0.224 m/s^2. This is useful during the start of the car or when the car comes to a total halt and starts again.
+When the car ahead within 30 m, the standard deceleration of 0.224m/s^2 occurs, but when the vehicle ahead is very near (<10 m), deceleration is set to 3*0.224 to apply harder break to avoid collission. This was done when the car ahead suddenly stops and the standard deceleration would not stop the vehicle before colliding the car in front
+
+#### Car does not have collisions
+The image above shows there are no incidents during the 8.5 mile drive
+
+#### The car stays in its lane, except for the time between changing lanes
+The car's lane is set using the frenet lateral co-ordinate (d) and since we know the width of the lane, the car was always set to the center of the lane
+
+#### The car is able to change lanes
+Yes, whenever there's a vehicle ahead is < 30 m and it is moving slower than the ego vehicle(the vehicle in question / our vehicle), then the ego vehicle takes the lane that's safer to it. The logic explained in Behaviour planning module below is used to achieve this behaviour
+
+
+### Reflection
+The following concepts are implemted for determining the final trajectory to the vehicle
+* Prediction
+
+    It is very important to predict the behaviour of other vehicles in order to determine the next steps of the ego vehicle. The prection module is implemented between the lines 265 & 320 in main.cpp
+    In this module, using the sensor fusion data, a prediction is made on where the other vehicles are with respect to the ego vechicle. It considers the vehicles in all the three lanes.
+    It is considered dangerous to be behind a car within 30 m, and when this happens, the car decelerates. This module checks for this scenario and sets a flag.
+    Similarly, it also predicts the position of the car in the other lanes. If a car is over 30 m behind and 20 m ahead of the car in the other lane, only then it is considerd to be safe and do a safe lane change. This module checks for this scenario and sets a flag.
+    Note : It is to be noted that the simulator is 1 cycle behind, so the prediction is done on the next step (which is 0.02 sec ahead). This is done using the following code snippet
+    
+    `other_car_s += ((double)prev_size * 0.02 * other_car_vel);`
+    
+* Behaviour Planning
+    This module is responsible for the actual decision making during the course of the travel. The prection module is implemented between the lines 322 & 384 in main.cpp
+    It checks when it is safe to change lanes when something is ahead of you in your current lane. The flags set by the prediction module are used to determine the decision
+    
+        If there's a car ahead
+		check if LEFT LANE is free and change lane, else
+		check if RIGHT LANE is free and change lane, else
+		slow down
+
+        Always be on middle lane when its free, or you are not overtaking.
+        This gives space for other faster moving vehicles to overtake in the left most lane
+        So, if the vehicle is not in MIDDLE LANE,
+		check if vehicle is in LEFT LANE, and if middle lane is free, move to middle lane
+                                            OR
+		check if vehicle is in RIGHT LANE, and if middle lane is free, move to middle lane
+
+* Trajectory Generation
+    This forms the major chunk of implementation in main.cpp - Lines 386 to 551
+    Trajectory generation not only involves a smooth trajectory for lane change or straight drive, but also a sequence of time steps in which this transition needs to be performed.
+    Map waypoints given by the Map are very sparse and it is not realistic to use those points to determine the actual path. Hence using those sparse points, a trajectory is first generated and then it is interpolated for every time cycle of the simulator (which is 0.02 seconds)
+    The generation of trajectory is done using a library called 'Spline'. A spline generates a line that connects all the points sent to it. In this case, we consider the car's current position, its previous point, and 3 additional points in the future that are very sparse (30 m apart) to generate a smooth spline. Once the spline is generated, we can interpolate it to get as many points as we could.
+    In this case, we take the velocity and determine the points that are 0.02 seconds apart (which is simulator cycle frequency - 50 Hz) and get hte corresponding x & y co-ordinates. Once we have the next 50 points in the trajectory that are 0.02 sec apart, we can give them to the simulator via next_x_vals, next_y_vals varaibles which will be interpreted by simulator as guiding points and the car follows that path
    
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).
