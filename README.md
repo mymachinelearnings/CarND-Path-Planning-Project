@@ -1,10 +1,12 @@
-## Self-Driving Car Engineer Nanodegree Program
-## Term 3 Project 1
-### Path Planning Project
+# Udacity Self-Driving Car Engineer Nanodegree
+
+
+## Term 3 Project 1 :  Path Planning
+### Project Writeup
+
+[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 ---
-
-### Writeup Template
 
 In this project, your goal is to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. A successful path planner will be able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data.
 
@@ -56,7 +58,6 @@ The following concepts are implemted for determining the final trajectory to the
     `other_car_s += ((double)prev_size * 0.02 * other_car_vel);`
     
 * Behaviour Planning
-
     This module is responsible for the actual decision making during the course of the travel. The prection module is implemented between the lines 322 & 384 in main.cpp
     It checks when it is safe to change lanes when something is ahead of you in your current lane. The flags set by the prediction module are used to determine the decision
     
@@ -73,13 +74,16 @@ The following concepts are implemted for determining the final trajectory to the
 		check if vehicle is in RIGHT LANE, and if middle lane is free, move to middle lane
 
 * Trajectory Generation
-
     This forms the major chunk of implementation in main.cpp - Lines 386 to 551
     Trajectory generation not only involves a smooth trajectory for lane change or straight drive, but also a sequence of time steps in which this transition needs to be performed.
     Map waypoints given by the Map are very sparse and it is not realistic to use those points to determine the actual path. Hence using those sparse points, a trajectory is first generated and then it is interpolated for every time cycle of the simulator (which is 0.02 seconds)
     The generation of trajectory is done using a library called 'Spline'. A spline generates a line that connects all the points sent to it. In this case, we consider the car's current position, its previous point, and 3 additional points in the future that are very sparse (30 m apart) to generate a smooth spline. Once the spline is generated, we can interpolate it to get as many points as we could.
-    In this case, we take the velocity and determine the points that are 0.02 seconds apart (which is simulator cycle frequency - 50 Hz) and get hte corresponding x & y co-ordinates. Once we have the next 50 points in the trajectory that are 0.02 sec apart, we can give them to the simulator via next_x_vals, next_y_vals varaibles which will be interpreted by simulator as guiding points and the car follows that path
-   
+    In this case, we take the velocity and determine the points that are 0.02 seconds apart (which is simulator cycle frequency - 50 Hz) and get hte corresponding x & y co-ordinates. Once we have the next 50 points in the trajectory that are 0.02 sec apart, we can give them to the simulator via next_x_vals, next_y_vals varaibles which will be interpreted by simulator as guiding points and the car follows that path 
+
+---
+
+### Installation & Setup
+---
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).
 
@@ -165,4 +169,16 @@ A really helpful resource for doing this project and creating smooth trajectorie
     cd uWebSockets
     git checkout e94b6e1
     ```
+    
+---
 
+### **Authors** <br/>
+* Ravi Kiran Savirigana
+
+### **Acknowledgements** <br/>
+Thanks to Udacity for providing the startup code to start with. And a great community help from stackoverflow, slack & github
+
+
+```python
+
+```
